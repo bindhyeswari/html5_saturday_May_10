@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            var img = document.createElement('img');
+            img.src = 'sc.jpg';
+            var canvas = document.body.firstElementChild;
+            var context = canvas.getContext('2d');
+            img.onload = function(){
+                console.log();
+                canvas.height = img.height;
+                canvas.width = img.width;
+
+                context.drawImage(img, 0, 0);
+                var imageData = context.getImageData(0,0,canvas.width, canvas.height);
+                console.log(imageData.data.length);
+                console.log(851*315*4);
+
+                var pixels = imageData.data;
+                console.log(pixels[3]);
+                for(var i = 0; i < pixels.length; i+=4){
+                    var red = pixels[i];
+                    var blue = pixels[i + 1];
+                    var green = pixels[i + 2];
+                    var alpha = pixels[i + 3];
+                    var gr = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+
+                    if (gr > 50) {
+                        pixels[i] = pixels[i + 1] = pixels[i + 2] = 255;
+                    } else {
+                        pixels[i] = pixels[i + 1] = pixels[i + 2] = 0;
+                    }
+
+
+                }
+                context.putImageData(imageData, 0,0 );
+
+            };
+        });
+    </script>
+</head>
+<body>
+<canvas>
+
+</canvas>
+</body>
+</html>

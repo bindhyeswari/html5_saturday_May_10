@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            var img = document.createElement('img');
+            img.src = 'thai.jpg';
+            //document.body.appendChild(img);
+            img.addEventListener('load', function(evt){
+                console.log(evt.originalTarget);
+                //var self = evt.originalTarget;
+                var self = this;
+                console.log('Image is loaded...');
+                var canvas = document.body.firstElementChild;
+
+
+                canvas.height = window.innerHeight;
+                canvas.width = window.innerWidth;
+
+
+                var context = canvas.getContext('2d');
+                context.drawImage(self, 640,400,320,400, 0, 0, 320, 400);
+
+                // Object to store the image origin
+                var img_origin = {
+                    x: 0,
+                    y: 0
+                };
+                var init_mouse_loc = {
+                    x: 0,
+                    y: 0
+                };
+                var is_mouse_down = false;
+                canvas.onmousedown = function(e){
+                    init_mouse_loc.x = e.clientX;
+                    init_mouse_loc.y = e.clientY;
+                    is_mouse_down = true;
+                    console.log('clicked at ... ' + init_mouse_loc.x + ', ' + init_mouse_loc.y);
+                };
+                canvas.onmouseup = function(){
+                    is_mouse_down = false;
+                };
+                canvas.onmouseout = function(){
+                    is_mouse_down = false;
+                };
+
+
+
+
+                canvas.onmousemove = function(e){
+                    console.log('Final position is ...' + e.clientX + ', ' + e.clientY);
+
+
+                    if (is_mouse_down) {
+                        var deltax = e.clientX - init_mouse_loc.x;
+                        var deltay = e.clientY - init_mouse_loc.y;
+                        console.log('Delta is ... ' + deltax + ', ' + deltay);
+                        init_mouse_loc.x = e.clientX;
+                        init_mouse_loc.y = e.clientY;
+                        img_origin.x+=deltax;
+                        img_origin.y+=deltay;
+                        context.clearRect(0,0,canvas.width, canvas.height);
+                        context.drawImage(self, 640,400,320,400,img_origin.x, img_origin.y, 320, 400);
+                    }
+                };
+            });
+
+        });
+    </script>
+</head>
+<body>
+<canvas>
+
+</canvas>
+</body>
+</html>

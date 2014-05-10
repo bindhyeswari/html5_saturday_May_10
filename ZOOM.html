@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            var img = document.createElement('img');
+            img.src = 'sc.jpg';
+            //document.body.appendChild(img);
+            img.addEventListener('load', function(evt){
+                console.log(evt.originalTarget);
+                //var self = evt.originalTarget;
+                var self = this;
+                console.log('Image is loaded...');
+                var canvas = document.body.firstElementChild;
+                var context = canvas.getContext('2d');
+
+                // create another canvas for zoom
+                var canvas2 = document.createElement('canvas');
+                var expander = canvas2.getContext('2d');
+                context.fillStyle = '#ccc';
+                var cutout = 50;
+                document.getElementById('inp').onkeydown = function(e){
+                    if(e.keyCode === 13) {
+                        cutout = this.value;
+                    }
+
+                };
+                var expandsize = 100;
+                canvas.onmousemove = function(e){
+                    context.clearRect(0,0,1200,500);
+                    context.drawImage(self, 0,0);
+                    expander.drawImage(canvas, e.clientX - cutout / 2, e.clientY - cutout / 2, cutout,cutout,0,0,expandsize,expandsize);
+                    context.drawImage(canvas2,0,0,100,100,e.clientX - expandsize / 2, e.clientY - expandsize / 2, expandsize, expandsize);
+                };
+
+
+
+
+                // make the canvas height and width the same as the image
+
+
+            });
+        });
+    </script>
+</head>
+<body>
+<canvas height=500 width=1200>
+
+</canvas>
+<input type="text" id="inp"/>
+</body>
+</html>
