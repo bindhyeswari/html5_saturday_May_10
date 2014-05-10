@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <style>
+        body{
+            /*background-color: red;*/
+        }
+        span.button{
+            font: 100 0.85em Avenir;
+            padding: 0.25em 0.7em;
+            margin: 0.25em;
+            background-color: #555;
+            color: #eee;
+            text-shadow: 1px 1px 1px #222;
+            display: inline-block;
+            border-radius: 0.25em;
+            cursor: pointer;
+        }
+    </style>
+    <title>
+        Canvas Grayscale Filter
+    </title>
+    <script>
+
+        var gllImageFilter = {};
+        gllImageFilter.grayscale = function(img_data){
+            var red, blue, green, gr;
+            for (var i = 0; i < img_data.data.length; i+=4){
+                red = img_data.data[i];
+                blue = img_data.data[i+1];
+                green = img_data.data[i+2];
+                gr = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+                img_data.data[i] = img_data.data[i+1] = img_data.data[i+2] = gr;
+            }
+        };
+        gllImageFilter.blue = function(img_data){
+            var red, blue, green, gr;
+            console.log(img_data.data.length);
+            for (var i = 0; i < img_data.data.length; i+=4){
+                red = img_data.data[i];
+                blue = img_data.data[i+1];
+                green = img_data.data[i+2];
+                gr = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+                img_data.data[i] = 0;
+                img_data.data[i+1] = 0;
+                img_data.data[i+2] = gr;
+            }
+        };
+        gllImageFilter.threshold = function(img_data){
+            var threshold = 100;
+            var red, blue, green, gr;
+            for (var i = 0; i < img_data.data.length; i+=4){
+                red = img_data.data[i];
+                blue = img_data.data[i+1];
+                green = img_data.data[i+2];
+                gr = (0.2126 * red + 0.7152 * green + 0.0722 * blue >= threshold) ? 255 : 0;
+                img_data.data[i] = img_data.data[i+1] = img_data.data[i+2] = gr;
+            }
+        };
+        gllImageFilter.brighten = function(img_data){
+            var red, blue, green, gr;
+            for (var i = 0; i < img_data.data.length; i+=4){
+                img_data.data[i] += 10;
+                img_data.data[i+1] += 10;
+                img_data.data[i+2] += 10;
+            }
+        };
+        gllImageFilter.darken = function(img_data){
+            var red, blue, green, gr;
+            for (var i = 0; i < img_data.data.length; i+=4){
+                img_data.data[i] -= 10;
+                img_data.data[i+1] -= 10;
+                img_data.data[i+2] -= 10;
+            }
+        };
+        gllImageFilter.applyFilter = function(canvas, filter){
+            var context = canvas.getContext('2d');
+            var image_data = context.getImageData(0,0,canvas.width, canvas.height);
+            console.log(image_data);
+            filter(image_data);
+            context.putImageData(image_data, 0, 0);
+        };
+        gllImageFilter.reset = function(canvas, imgurl){
+            var img = new Image();
+            img.src = imgurl;
+            img.onload = function(){
+                canvas.height = img.height;
+                canvas.width = img.width;
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+            };
+        };
+        gllImageFilter.transparent = function(img_data){
+            for (var i = 0; i < img_data.data.length; i+=4){
+                img_data[i+3] = 0.5;
+            }
+        };
+
+
+        window.onload = function(){
+            var canvas = document.getElementById('canvas');
+            gllImageFilter.reset(canvas, 'thai.png');
+            document.getElementById('btn_reset').onclick = function(){
+                var canvas = document.getElementById('canvas');
+                gllImageFilter.reset(canvas, 'thai.png');
+            };
+            document.getElementById('btn_grayscale').onclick = function(){
+                var canvas = document.getElementById('canvas');
+                gllImageFilter.applyFilter(canvas, gllImageFilter.grayscale);
+            };
+            document.getElementById('btn_brighten').onclick = function(){
+                var canvas = document.getElementById('canvas');
+                gllImageFilter.applyFilter(canvas, gllImageFilter.brighten);
+            };
+            document.getElementById('btn_threshold').onclick = function(){
+                var canvas = document.getElementById('canvas');
+                gllImageFilter.applyFilter(canvas, gllImageFilter.threshold);
+            };
+            document.getElementById('btn_darken').onclick = function(){
+                var canvas = document.getElementById('canvas');
+                gllImageFilter.applyFilter(canvas, gllImageFilter.darken);
+            };
+            document.getElementById('btn_transparent').onclick = function(){
+                var canvas = document.getElementById('canvas');
+                gllImageFilter.applyFilter(canvas, gllImageFilter.transparent);
+            };
+            document.getElementById('btn_blue').onclick = function(){
+                var canvas = document.getElementById('canvas');
+                gllImageFilter.applyFilter(canvas, gllImageFilter.blue);
+            };
+        };
+
+    </script>
+</head>
+<body>
+<div style="margin: 1em;">
+    <span class="button" id="btn_grayscale">Grayscale</span>
+    <span class="button" id="btn_reset">Reset</span>
+    <span class="button" id="btn_brighten">Brighten</span>
+    <span class="button" id="btn_darken">Darken</span>
+    <span class="button" id="btn_threshold">Threshold</span>
+    <span class="button" id="btn_transparent">Transparency</span>
+    <span class="button" id="btn_blue">Blue</span>
+</div>
+<canvas id="canvas"></canvas>
+
+
+
+
+
+</body>
+</html>
